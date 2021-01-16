@@ -8,29 +8,32 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 public class TwilioMediaStreamsHandler extends AbstractWebSocketHandler {
     Logger logger = LoggerFactory.getLogger(TwilioMediaStreamsHandler.class);
 
+    private Map<WebSocketSession, GoogleTextToSpeechService> sessions = new HashMap<>();
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        //when the Websocket connects this method will be called
-        logger.info("New connection has been established");
-        System.out.println("New connection has been established");
-
-
+        sessions.put(session, new GoogleTextToSpeechService(
+                transcription -> {
+                    System.out.println("Transcription: " + transcription);
+                }
+        ));
     }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        //this method will be called repeatedly every time there is a new message
-        logger.info("Message received, length is "+ message.getPayloadLength());
-        System.out.println("Message received, length is "+ message.getPayloadLength());
+    protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) {
+        sessions.get(session).send(textMessage.getPayload());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        //this method will be called when the connection is closed
-        System.out.println("Connection closed");
+        sessions.get(session).close();
+        sessions.remove(session);
     }
 }

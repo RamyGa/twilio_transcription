@@ -1,10 +1,7 @@
 package com.ramy.twilio;
 
 import com.twilio.twiml.VoiceResponse;
-import com.twilio.twiml.voice.Pause;
-import com.twilio.twiml.voice.Play;
-import com.twilio.twiml.voice.Record;
-import com.twilio.twiml.voice.Say;
+import com.twilio.twiml.voice.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
